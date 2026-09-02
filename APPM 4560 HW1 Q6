@@ -1,0 +1,62 @@
+%% Simulation Assignment 1 Question 6
+
+clear;
+clc;
+close all;
+
+P_analytic = 23*pi/192;
+
+fprintf('Analytic probability = %.8f\n', P_analytic);
+
+N_values = round(logspace(2, 7, 20)); 
+P_est = zeros(size(N_values));
+
+%% Monte Carlo simulation
+for k = 1:length(N_values)
+
+    N = N_values(k);
+
+    X = rand(N,1);
+    Y = rand(N,1);
+    Z = rand(N,1);
+
+    success = (X.^2 + Y.^2 < Z) & (Z.^2 > X.*Y);
+
+
+    P_est(k) = mean(success);
+end
+
+
+fprintf('\n       N          Estimate       Error\n');
+fprintf('------\n');
+
+for k = 1:length(N_values)
+    error = P_est(k) - P_analytic;
+    fprintf('%10d    %.8f    %+.8f\n', ...
+        N_values(k), P_est(k), error);
+end
+
+%% Plot estimate versus sample size
+figure;
+
+semilogx(N_values, P_est, 'bo-', ...
+    'LineWidth', 1.5, ...
+    'MarkerSize', 5);
+
+hold on;
+
+% Analytic value as horizontal line
+yline(P_analytic, 'r--', ...
+    'LineWidth', 2);
+
+grid on;
+
+xlabel('Sample size N');
+ylabel('Estimated probability');
+title('Monte Carlo Estimate vs. Sample Size');
+
+legend('Monte Carlo estimate', ...
+       'Analytic value = 23\pi/192', ...
+       'Location', 'best');
+
+
